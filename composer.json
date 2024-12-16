@@ -1,0 +1,27 @@
+{
+    "name": "pkg6/laravel-settings",
+    "description": "Store Laravel application settings in the database.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Pkg6\\Laravel\\Settings\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "zhiqiang",
+            "email": "zhiqiang2033@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">7.4",
+        "pkg6/db-settings": "^1.0"
+    },
+    "require-dev": {
+        "laravel/framework": "*"
+    }
+}
