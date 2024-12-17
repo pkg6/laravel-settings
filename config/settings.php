@@ -47,6 +47,10 @@ return [
         'eloquent' => [
             'driver' => 'eloquent',
             'model' => \Pkg6\Laravel\Settings\Models\Setting::class,
+        ],
+        'database' => [
+            'driver' => 'database',
+            'connection' => env('DB_CONNECTION', 'mysql'),
         ]
     ]
 ];

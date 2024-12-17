@@ -3,11 +3,12 @@
 namespace Pkg6\Laravel\Settings\Drivers;
 
 use Illuminate\Database\Eloquent\Model;
-use Pkg6\DB\Settings\Contracts\Context;
 use Pkg6\DB\Settings\Contracts\Driver;
 
 class EloquentDriver implements Driver
 {
+    use DriverContext;
+
     /**
      * @var Model
      */
@@ -26,37 +27,12 @@ class EloquentDriver implements Driver
     }
 
     /**
-     * @param \Pkg6\DB\Settings\Contracts\Context|null $context
-     * @return void
-     */
-    public function context(Context $context = null)
-    {
-        $this->context = $context;
-    }
-
-    /**
-     * @return array
-     */
-    public function contextArray()
-    {
-        if (!is_null($this->context)) {
-            return [
-                'model' => $this->context->get('model'),
-                'model_id' => $this->context->get('id'),
-            ];
-        }
-        return [];
-    }
-
-    /**
      * @param $key
      * @return void
      */
     public function forget($key): void
     {
-        $context = $this->contextArray();
-        $context = array_merge($context, compact('key'));
-        $this->model->newQuery()->where($context)->delete();
+        $this->model->newQuery()->where($this->getContextAttributes($key))->delete();
     }
 
     /**
@@ -66,9 +42,8 @@ class EloquentDriver implements Driver
      */
     public function get($key, $default = null)
     {
-        $context = $this->contextArray();
-        $context = array_merge($context, compact('key'));
-        return $this->model->newQuery()->where($context)->value('value');
+        $value = $this->model->newQuery()->where($this->getContextAttributes($key))->value('value');
+        return $value ?? $default;
     }
 
     /**
@@ -77,9 +52,7 @@ class EloquentDriver implements Driver
      */
     public function has($key): bool
     {
-        $context = $this->contextArray();
-        $context = array_merge($context, compact('key'));
-        return $this->model->newQuery()->where($context)->exists();
+        return $this->model->newQuery()->where($this->getContextAttributes($key))->exists();
     }
 
     /**
@@ -89,8 +62,7 @@ class EloquentDriver implements Driver
      */
     public function set(string $key, $value = null): void
     {
-        $context = $this->contextArray();
-        $context = array_merge($context, compact('key'));
-        $this->model->newQuery()->updateOrCreate($context, compact('value'));
+        $attributes = $this->getContextAttributes($key);
+        $this->model->newQuery()->updateOrCreate($attributes, compact('value'));
     }
 }

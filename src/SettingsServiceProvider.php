@@ -27,7 +27,7 @@ class SettingsServiceProvider extends ServiceProvider
             if (config('app.key')) {
                 $settings->setEncrypter($this->app->get('encrypter'));
             }
-//            config('settings.cache') ? $settings->enableCache() : $settings->disableCache();
+            config('settings.cache') ? $settings->enableCache() : $settings->disableCache();
             config('settings.encryption') ? $settings->enableEncryption() : $settings->disableEncryption();
             return $settings;
         });

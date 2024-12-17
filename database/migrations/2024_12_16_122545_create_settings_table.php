@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create(config("settings.table"), function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique()->index();
-            $table->string('model')->nullable();
+            $table->string('model')->nullable()->default('');
             $table->bigInteger('model_id')->default(0);
             $table->longText('value')->nullable();
         });
