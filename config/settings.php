@@ -41,6 +41,9 @@ return [
     */
     'encryption' => true,
 
+    "key_generator" => \Pkg6\DB\Settings\KeyGenerator::class,
+    "value_generator" => \Pkg6\DB\Settings\ValueSerializer::class,
+
     'driver' => env('SETTINGS_DRIVER', 'eloquent'),
 
     "drivers" => [

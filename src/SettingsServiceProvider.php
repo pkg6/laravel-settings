@@ -3,6 +3,7 @@
 namespace Pkg6\Laravel\Settings;
 
 use Illuminate\Support\ServiceProvider;
+use Pkg6\DB\Settings\Contracts\KeyGenerator;
 
 class SettingsServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,10 @@ class SettingsServiceProvider extends ServiceProvider
             return new DriverFactory(config('settings'));
         });
 
+        $this->app->singleton(KeyGenerator::class, function () {
+            return new \Pkg6\DB\Settings\KeyGenerator();
+        });
+
         $this->app->singleton('db.laravel.settings', function () {
             $driverFactory = $this->app->get('db.laravel.settings.factory');
             $settings = new Settings($driverFactory->driver());
@@ -27,9 +32,23 @@ class SettingsServiceProvider extends ServiceProvider
             if (config('app.key')) {
                 $settings->setEncrypter($this->app->get('encrypter'));
             }
+            $settings->setKeyGenerator($this->getConfigNew('key_generator', \Pkg6\DB\Settings\KeyGenerator::class));
+            $settings->setSerializer($this->getConfigNew('value_generator', \Pkg6\DB\Settings\ValueSerializer::class));
             config('settings.cache') ? $settings->enableCache() : $settings->disableCache();
             config('settings.encryption') ? $settings->enableEncryption() : $settings->disableEncryption();
             return $settings;
         });
+    }
+
+    protected function getConfigNew($settingKey, $default = null)
+    {
+        $n = config('settings.' . $settingKey, $default);
+        if (is_object($n)) {
+            return $n;
+        }
+        if (is_string($n) && class_exists($n)) {
+            return new $n;
+        }
+        return new $default;
     }
 }
